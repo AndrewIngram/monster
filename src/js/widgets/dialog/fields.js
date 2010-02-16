@@ -3,17 +3,24 @@
  */
 MONSTER.field = function(spec) {
 	var that = {};
+		
+	that.callbacks = spec.callbacks,
+	that.name = spec.name,
+	that.verbose_name = spec.verbose_name,
 	
-	that.editor = spec.editor;
-	that.node = spec.node;
-	that.data = spec.data;
-	
-	that.get_data = function(){
-	
+	that.get_value = function(){
+		return that.callbacks[0]();
+	},
+	that.set_value = function(data){
+		that.callbacks[1](data);
+	},	
+	that.init = function(){
+		
 	};
 	that.render = function(){
-	
+		var html = '
 	};
 	
 	return that;
 }
+
