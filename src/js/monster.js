@@ -74,6 +74,11 @@ Function.prototype.methods = function(map) {
 MONSTER.widgets = {};
 
 /**
+ * Dialog fields get stored here
+ */
+MONSTER.fields = {};
+
+/**
  * Creates an instance of a monster editor. Takes a jQuery DOM node and a data hash.
  */
 MONSTER.editor = function(node,spec,data,build) {

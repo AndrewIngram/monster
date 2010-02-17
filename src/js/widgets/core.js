@@ -1,8 +1,9 @@
 /**
  * The basic interface of a widget
  */
-MONSTER.widget = function(spec) {
+MONSTER.widget = function(spec, my) {
 	var that = {};
+	my = my || {};
 	
 	that.editor = spec.editor;
 	that.node = spec.node;
@@ -21,25 +22,34 @@ MONSTER.widget = function(spec) {
 /**
  * This is the base interface for a widget which should use a modal dialog
  */
-MONSTER.dialog_widget = function(spec) {
-	var that = MONSTER.widget(spec);
+MONSTER.dialog_widget = function(spec, my) {
+	var that = MONSTER.widget(spec, my);
 	that.fields = {};
 	
 	var title = 'Dialog';
 	
 	var render_fields = function(container){
-		for (key in that.fields) {
-			var f = that.fields[key]
+		for (key in that.fields) {						
+			if (that.fields.hasOwnProperty(key)){
+				var f = that.fields[key]
 			
-			// Get a jQuery node of the rendered field
-			var rendered_field = f.render();
-			container.append(rendered_field);		
+				var rendered_field = f.render();
+				container.append(rendered_field);
+			}
 		}
 	};
 	
 	that.get_title = function(){
 		return title;
 	};
+	
+	that.node.click(function(){
+		var container = $('<div></div>');
+		
+		render_fields(container);
+		
+		console.log(container);
+	});
 
 	return that;	
 }
@@ -50,47 +60,46 @@ MONSTER.dialog_widget = function(spec) {
  * <a m:widget="linkedimage" href="#" title="link title"><img src="http://example.org/foo.gif" alt="Picture of a Foo" /></a>
  * 
  */
-MONSTER.widgets.linkedimage = function(spec){
-	var that = MONSTER.dialog_widget(spec);
+MONSTER.widgets.linkedimage = function(spec, my){
+	var that = MONSTER.dialog_widget(spec, my);
 	var title = 'Linked Image';
 	
 	var n = that.node;
 	
 	that.fields = {
-		image: MONSTER.fields.imagefield({
+		image: MONSTER.fields.textfield({
 			verbose_name: 'Image',
 			callbacks: [
-				function(){ return n.find('img').attr('src') },
-				function(data){ n.find('img').attr('src',data) }
+				function(){ return n.find('img').attr('src'); },
+				function(data){ n.find('img').attr('src',data); },
 			],
 			data_name: 'src',	
 		}),
 		alt: MONSTER.fields.textfield({
 			verbose_name: 'Alt Text',
 			callbacks: [
-				function(){ return n.find('img').attr('alt') },
-				function(data) { n.find('img').attr('alt',data) },
+				function(){ return n.find('img').attr('alt'); },
+				function(data) { n.find('img').attr('alt',data); },
 			],
 			data_name: 'alt',
 		}),
 		href: MONSTER.fields.textfield({
 			verbose_name: 'Link URL',
 			callbacks: [
-				function(){ return n.attr('title') },
-				function(data) { n.attr('title',data) },
+				function(){ return n.attr('title'); },
+				function(data) { n.attr('title',data); },
 			],
 			data_name: 'href',
 		}),
 		title : MONSTER.fields.textfield({
 			verbose_name: 'Link Title',
 			callbacks: [
-				function(){ return n.attr('title') },
-				function(data){ n.attr('title',data) },
+				function(){ return n.attr('title'); },
+				function(data){ n.attr('title',data); },
 			],
 			data_name: 'title',
 		}),
 	};
-
 	return that;
 }
 
