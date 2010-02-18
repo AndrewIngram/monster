@@ -21,16 +21,6 @@ Function.prototype.methods = function(map) {
 	return this;
 };
 
-/**
- * Let's extend Object with some useful things for inheritance, according to Crockford.
- */
- Object.method('superior', function(name) {
- 	var that = this, method = that[name];
- 	return function() {
- 		return method.apply(that, arguments);
- 	};
- });
-
 /** 
  * Extend jQuery to allow us to easy find widgets.
  * Use $(':widget) to find any element with m:widget set.
@@ -55,9 +45,9 @@ Function.prototype.methods = function(map) {
 
 			var result = temp.filter(function(i){
 				var $this = $(this);
-				parents = $this.parents(':widget');
+				var parents = $this.parents(':widget');
 				if (parents.length > 0) {
-					index = parents.index(node);
+					var index = parents.index(node);
 					if (index == 0) { return true; }
 					return false;
 				}
@@ -112,7 +102,7 @@ MONSTER.editor.methods({
 			editor: this,		
 		}));
 	},
-	build_data: function() {
+	get_data: function() {
 		var ed = this;
 		var result = [];
 		

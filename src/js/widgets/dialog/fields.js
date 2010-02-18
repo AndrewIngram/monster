@@ -10,36 +10,35 @@ MONSTER.field = function(spec, my) {
 	that.data_name = spec.data_name,
 	that.verbose_name = spec.verbose_name,
 	
-	that.get_value = function(){
+	that.get_value = function(){	
 		return that.callbacks[0]();
 	},
 	that.set_value = function(data){
 		try {
 			that.callbacks[1](data);
-			return data;
 		}
 		catch(e) {
 			// Uh oh
 		}	
 	},
 	
-	// Renders the widget using the getter callback function to find the data
-	that.render = function(){
+	// Prepares the widget for rendering and defines a callback to populate it with data
+	that.prepare = function(){
 		var html = '<label for="dialog-field-' +that.data_name+ '">'+that.verbose_name+'</label><input name="dialog-field-'+that.data_name+'"></input>';
 		var data = that.get_value();
 		
-		field_node = $(html);
+		that.field_node = $(html);
 		
 		if (data) {
-			field_node.find('input').val(data);
+			that.field_node.filter('input').val(data);
 		};
 		
-		return field_node;
+		return that.field_node;
 	};
 	
 	// Returns a value from the field (and calls the second callback)
-	that.to_data= function(){
-		return that.set_value(that.field_node.find('input').val());
+	that.write = function(){
+		that.set_value(that.field_node.filter('input').val());
 	};
 	
 	return that;

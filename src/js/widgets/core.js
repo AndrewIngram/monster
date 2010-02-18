@@ -28,27 +28,58 @@ MONSTER.dialog_widget = function(spec, my) {
 	
 	var title = 'Dialog';
 	
-	var render_fields = function(container){
+	that.prepare = function(container){
 		for (key in that.fields) {						
 			if (that.fields.hasOwnProperty(key)){
-				var f = that.fields[key]
-			
-				var rendered_field = f.render();
-				container.append(rendered_field);
+				var field_node = that.fields[key].prepare();
+				container.append(field_node);
 			}
 		}
 	};
+	
+	that.write = function(container){
+		for (key in that.fields) {						
+			if (that.fields.hasOwnProperty(key)){
+				that.fields[key].write();
+			}
+		}
+	}
 	
 	that.get_title = function(){
 		return title;
 	};
 	
+	that.get_data = function(){
+		var result = {};
+
+		for (key in that.fields) {						
+			if (that.fields.hasOwnProperty(key)){
+				var field = that.fields[key];
+				result[field.data_name] = field.get_value();
+			}
+		}
+		
+		return result;
+	};
+	
 	that.node.click(function(){
-		var container = $('<div></div>');
+		var container = $('<div id="monster-dialog-container"></div>');
 		
-		render_fields(container);
+		that.prepare(container);
 		
-		console.log(container);
+		container.dialog({
+			title: that.get_title(),
+			modal: true,
+			buttons: { 
+				"Ok": function() {
+					that.write(container);
+					$(this).dialog("close");
+				},
+				"Cancel": function() {
+					$(this).dialog("close");
+				},
+			}, 
+		});
 	});
 
 	return that;	
@@ -86,8 +117,8 @@ MONSTER.widgets.linkedimage = function(spec, my){
 		href: MONSTER.fields.textfield({
 			verbose_name: 'Link URL',
 			callbacks: [
-				function(){ return n.attr('title'); },
-				function(data) { n.attr('title',data); },
+				function(){ return n.attr('href'); },
+				function(data) { n.attr('href',data); },
 			],
 			data_name: 'href',
 		}),

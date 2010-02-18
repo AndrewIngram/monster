@@ -1,22 +1,26 @@
 <!doctype>
 <html>
 <head>
-	<title>Simple Example of using Monster</title>
-	
-	<link rel="stylesheet" href="../src/css/monter.css">
+
+<title>Simple Example of using Monster</title>
+
+<link rel="stylesheet" href="../src/css/monster.css">
+<link rel="stylesheet" href="../lib/css/theme/jquery-ui-1.7.2.custom.css">
 
 </head>
 <body>
 
 <div id="monster">
-
-<h1 m:widget="line" m:title="Page Title">Heading 1</h1>
-
-<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x200" /></a>
+	<h1 m:widget="line" m:title="Page Title">Heading 1</h1>
+	<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x200" /></a>
 
 </div>
 
+<input id="data-test" type="submit" value="See Data">
+
+
 <script src="../lib/js/jquery-1.4.1.min.js"></script>
+<script src="../lib/js/jquery-ui-1.7.2.custom.min.js"></script>
 <script src="../lib/js/jquery.jeditable.js"></script>
 <script src="../src/js/monster.js"></script>
 <script src="../src/js/widgets/core.js"></script>
@@ -24,12 +28,16 @@
 
 <script>
 
-var node = $('#monster');
-var data = {};
-
-var editor = new MONSTER.editor(node,{},data,true);
-
-console.log(node.widgets());
+	$(document).ready(function(){
+		var node = $('#monster');
+		var data = {};
+		
+		var editor = new MONSTER.editor(node,{},data,true);
+		
+		$('input#data-test').click(function(){
+			console.log(editor.get_data());
+		});
+	});
 
 </script>
 
