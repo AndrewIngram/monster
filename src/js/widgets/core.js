@@ -28,7 +28,7 @@ MONSTER.dialog_widget = function(spec, my) {
 	
 	var title = 'Dialog';
 	
-	that.prepare = function(container){
+	var prepare = function(container){
 		for (key in that.fields) {						
 			if (that.fields.hasOwnProperty(key)){
 				var field_node = that.fields[key].prepare();
@@ -65,7 +65,7 @@ MONSTER.dialog_widget = function(spec, my) {
 	that.node.click(function(){
 		var container = $('<div id="monster-dialog-container"></div>');
 		
-		that.prepare(container);
+		prepare(container);
 		
 		container.dialog({
 			title: that.get_title(),
@@ -98,7 +98,7 @@ MONSTER.widgets.linkedimage = function(spec, my){
 	var n = that.node;
 	
 	that.fields = {
-		image: MONSTER.fields.textfield({
+		image: MONSTER.fields.imagefield({
 			verbose_name: 'Image',
 			callbacks: [
 				function(){ return n.find('img').attr('src'); },

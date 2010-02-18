@@ -48,3 +48,29 @@ MONSTER.fields.textfield = function(spec,my){
 	return MONSTER.field(spec,my);
 };
 
+MONSTER.fields.imagefield = function(spec,my){
+
+	var that = MONSTER.field(spec,my);
+	
+	that.prepare = function(){
+		var html = '<label for="dialog-field-' +that.data_name+ '">'+that.verbose_name+'</label><input name="dialog-field-'+that.data_name+'"></input><br/><img src="" width="200" />';
+		var data = that.get_value();
+		
+		that.field_node = $(html);
+		
+		if (data) {
+			that.field_node.filter('input').val(data);
+			that.field_node.filter('img').attr('src',data);
+		};
+		
+		that.field_node.filter('input').change(function(e){
+			that.field_node.filter('img').attr('src',$(this).val());
+		});
+		
+		return that.field_node;
+	};	
+
+	return that;
+	
+};
+
