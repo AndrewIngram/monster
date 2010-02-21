@@ -14,9 +14,11 @@ Function.prototype.method = function(name, func) {
  * Defining lots of methods at once...
  */
 Function.prototype.methods = function(map) {
-	for (entry in map) {
-		var val = map[entry]
-		this.method(entry,val);
+	for (var entry in map) {
+		if (map.hasOwnProperty(entry)){
+			var val = map[entry];
+			this.method(entry,val);
+		}	
 	}
 	return this;
 };
@@ -39,34 +41,24 @@ Function.prototype.methods = function(map) {
 		}
 	});
 	
-  	$.fn.extend({
-	 	widgets : function() {
+	$.fn.extend({
+		widgets : function() {
 			var temp = this.find(':widget');
 
 			var result = temp.filter(function(i){
-				var $this = $(this);
-				var parents = $this.parents(':widget');
+				var node = $(this);
+				var parents = node.parents(':widget');
 				if (parents.length > 0) {
 					var index = parents.index(node);
-					if (index == 0) { return true; }
+					if (index === 0) { return true; }
 					return false;
 				}
 				return true;
 			});
 			return result;
-		},
+		}
 	});
 })(jQuery);
-
-/**
- * This is where we store widgets that can be used by any instance of an editor.
- */
-MONSTER.widgets = {};
-
-/**
- * Dialog fields get stored here
- */
-MONSTER.fields = {};
 
 /**
  * Creates an instance of a monster editor. Takes a jQuery DOM node and a data hash.
@@ -99,7 +91,7 @@ MONSTER.editor.methods({
 		node.data('widget',widget({
 			node: node,
 			data: data,
-			editor: this,		
+			editor: this	
 		}));
 	},
 	get_data: function() {
