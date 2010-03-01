@@ -1,5 +1,5 @@
 MONSTER.base = MONSTER.base || {};
-MONSTER.widgets = {};
+MONSTER.widgets = MONSTER.widgets || {};
 
 /**
  * The basic interface of a widget
@@ -24,11 +24,115 @@ MONSTER.base.widget = function(spec, my) {
 MONSTER.widgets.container = function(spec, my) {
 	var that = MONSTER.base.widget(spec, my);
 	
+	var block_options = [];
+	var block_options_by_type = {};
+	
+	var node = spec.node;
+	
+	var build_options = function(i) {
+		
+		var $this = $(this);
+		
+		var html = $('<div />').append($this.clone()).remove().html();
+		var label = $this.attr('m:label');
+		
+		block_options_by_type[label] = html;
+		
+		block_options[i] = {
+			label: label,
+			html: html
+		};
+	};
+	
+	var container_nodes = function() {		
+		return $(this).attr('m:widget') !== 'container';
+	};
+	
+	node.widgets().filter(container_nodes).each(build_options);	
+		
+	node.empty();
+	
+	node.append(block_options[0].html);
+	
+	node.widgets().filter(container_nodes).each(function(i){
+		spec.editor.editor_for_node($(this),undefined);
+	});
+	
+	var select = $('<select>');
+			
+	for (var i=0; i < block_options.length; i++){
+
+		var temp = block_options[i];
+		
+		var option = $('<option>');
+		option.attr('value',i);
+		option.text(temp.label);
+
+		select.append(option);
+	}		
+	
+	var handler = $('<div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all" style="z-index: 9999; margin: 0 0 10px; padding: 2px;"><span class="add ui-datepicker-prev ui-corner-all"><span class="ui-icon ui-icon-plus"></span></span></div>');
+	
+	handler.prepend(select);
+	
+	node.append(handler);		
+	
+	node.sortable({
+		handle: 'span.move',
+		scroll: true,
+		cursorAt: 'bottom',
+		tolerance: 'pointer',
+		containment: 'parent'
+	});
+
+	handler.children('span.add').click(function(){
+		new_node = $(block_options[select.get(0).value]['html']);
+		new_node.hide();
+		$(this).parent().before(new_node);
+
+		MONSTER.widgets.block({
+			'node': new_node,
+			'data': undefined,
+			'editor': spec.editor
+		});
+		
+		new_node.fadeIn(400);
+		return false;
+	});	
+	
 	return that;
 }
 
 MONSTER.widgets.block = function(spec, my) {
 	var that = MONSTER.base.widget(spec,my);
+
+	var node = spec.node;
+
+	var temp = node.widgets();
+	
+	temp.each(function(i){
+		spec.editor.editor_for_node($(this), spec.data ? spec.data[i] : undefined);
+	});
+	
+	var handler = $('<div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all" style="z-index: 9999; position: absolute; top: -2px; right: -2px; width: 32px; height: 16px; padding: 2px;"><span class="move ui-datepicker-prev ui-corner-all"><span class="ui-icon ui-icon-arrow-4">Move</span></span><span class="delete ui-datepicker-prev ui-corner-all"><span class="ui-icon ui-icon-trash">Remove</span></span></div>');		
+	node.prepend(handler);
+	
+	node.css({'position': 'relative'});
+	
+	handler.hide();
+	
+	node.hover(function(){
+		handler.show();
+	},function(){
+		handler.hide();
+	});
+	
+	handler.children('span.delete').click(function(){
+		node.fadeOut(400, function () {
+    		$(this).remove();
+  		});
+		return false;			
+	});
 	
 	return that;
 }
@@ -204,16 +308,64 @@ MONSTER.widgets.linkedimage = function(spec, my){
 MONSTER.widgets.line = function(spec){
 	var that = MONSTER.base.widget(spec);
 	
-	if (that.data) {
-		that.node.html(that.data);
+	if (spec.data) {
+		spec.node.html(spec.data);
 	}
 	
-	that.node.editable(function(value, settings){
+	spec.node.editable(function(value, settings){
 			return value;
 		}, {
-			style: 'inherit'
+
 		}
 	);
+	
+	that.get_data = function(){
+		return spec.node.html();
+	};
+	that.render = function(){
+		spec.node.html(spec.data);
+	};
+			
+	return that;
+};
+
+MONSTER.widgets.markdown = function(spec,my){
+	var my = my || {};
+	var that = MONSTER.base.widget(spec,my);
+	
+	var converter = new Showdown.converter();
+	
+	if (spec.data) {
+		spec.node.html(converter.makeHtml(spec.data));
+	}
+	
+	that.node.click(function(e){
+	
+		e.preventDefault();
+	
+		var container = $('<textarea />');
+		container.text(spec.data);
+		
+		container.dialog({
+			title: 'Markdown Text',
+			modal: true,
+			width: 640,
+			height: 480,
+			resizable: false,
+			modal: true,
+			draggable: false,
+			buttons: { 
+				"Ok": function() {
+					spec.data = container.val();
+					spec.node.html(converter.makeHtml(spec.data));
+					$(this).dialog("close");
+				},
+				"Cancel": function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+	});
 	
 	that.get_data = function(){
 		return that.node.html();
