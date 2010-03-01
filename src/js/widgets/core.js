@@ -349,6 +349,11 @@ MONSTER.widgets.markdown = function(spec,my){
 		container.dialog({
 			title: 'Markdown Text',
 			modal: true,
+			width: 640,
+			height: 480,
+			resizable: false,
+			modal: true,
+			draggable: false,
 			buttons: { 
 				"Ok": function() {
 					spec.data = container.val();
