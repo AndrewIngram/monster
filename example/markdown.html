@@ -35,7 +35,7 @@
 		position: relative;
 		z-index: 100;
 	}
-	
+		
 	.aside-right {
 		float: right;
 		margin: 0 0 20px 20px;
@@ -48,6 +48,20 @@
 		float: left;
 		width: 960px;
 	}	
+	
+	.aside-left img, .aside-right img, .embed-full img {
+		display: block;
+		vertical-align: bottom;
+	}	
+	
+	.aside-left div, .aside-right div, .embed-full div {
+		margin-top: 10px;
+		font-size: 10px;
+	}
+	
+	.aside-left p, .aside-right p, .embed-full p {
+		margin: 0 0 1.5em;
+	}
 	
 	p {
 		margin: 0 170px 1.5em;
@@ -72,14 +86,17 @@
 			
 		<div class="aside-left" m:widget="block" m:label="Aside Left">	
 			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x300" /></a>
+			<div m:widget="markdown">Caption</div>
 		</div>
 		
 		<div class="embed-full" m:widget="block" m:label="Full Width">	
 			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/960x100" /></a>
+			<div m:widget="markdown">Caption</div>
 		</div>		
 		
 		<div class="aside-right" m:widget="block" m:label="Aside Right">	
 			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x300" /></a>
+			<div m:widget="markdown">Caption</div>
 		</div>			
 		
 	</div>
