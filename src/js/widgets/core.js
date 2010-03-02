@@ -128,6 +128,11 @@ MONSTER.widgets.block = function(spec, my) {
 		handler.hide();
 	});
 	
+	node.click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+	})
+	
 	handler.children('span.delete').click(function(){
 		node.fadeOut(400, function () {
     		$(this).remove();
@@ -344,6 +349,7 @@ MONSTER.widgets.markdown = function(spec,my){
 	that.node.click(function(e){
 	
 		e.preventDefault();
+		e.stopPropagation();
 	
 		var container = $('<textarea />');
 		container.text(spec.data);
@@ -464,7 +470,7 @@ MONSTER.widgets.markdown_container = function(spec,my){
 		});		
 		
 		md_node.sortable('refresh');	
-		
+
 		new_node.fadeIn(400);
 		return false;
 	});
