@@ -1,0 +1,114 @@
+<!doctype>
+<html>
+<head>
+
+<title>Document Composition with Monster and Monster</title>
+
+<link rel="stylesheet" href="../lib/css/reset.css">
+<link rel="stylesheet" href="../lib/css/text.css">
+<link rel="stylesheet" href="../lib/css/960.css">
+
+<link rel="stylesheet" href="../lib/css/theme/jquery-ui-1.7.2.custom.css">
+<link rel="stylesheet" href="../src/css/monster.css">
+
+<style>
+	
+	body {
+		font-size: 12px;
+		font-family: Helvetica, Arial, sans-serif;
+		line-height: 1.5;
+	}
+	
+	#container {
+		margin: 50px auto;
+	}
+	
+	h1 {
+		font-size: 28px;
+		line-height: 1;
+		margin: 0 0 1em;
+	}
+	
+	.aside-left {
+		float: left;
+		margin: 0 20px 20px 0;
+		position: relative;
+		z-index: 100;
+	}
+	
+	.aside-right {
+		float: right;
+		margin: 0 0 20px 20px;
+		position: relative;
+		z-index: 100;
+	}
+	
+	.embed-full {
+		margin: 0 0 1.5em;
+		float: left;
+		width: 960px;
+	}	
+	
+	p {
+		margin: 0 170px 1.5em;
+	}
+	
+</style>
+
+</head>
+<body>
+
+<div id="container" class="container_12">
+	
+	<div id="contents-primary">
+	
+	<div class="prefix_2 suffix_2 grid_8"
+		<h1 m:widget="line" m:title="Page Title">Heading 1</h1>
+	</div>
+	
+	<div class="clear"></div>
+	
+	<div m:widget="markdown_container">
+			
+		<div class="aside-left" m:widget="block" m:label="Aside Left">	
+			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x300" /></a>
+		</div>
+		
+		<div class="embed-full" m:widget="block" m:label="Full Width">	
+			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/960x100" /></a>
+		</div>		
+		
+		<div class="aside-right" m:widget="block" m:label="Aside Right">	
+			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x300" /></a>
+		</div>			
+		
+	</div>
+	
+	</div>
+	
+</div>
+
+
+<script src="../lib/js/jquery-1.4.1.min.js"></script>
+<script src="../lib/js/jquery-ui-1.7.2.custom.min.js"></script>
+<script src="../lib/js/jquery.jeditable.js"></script>
+<script src="../lib/js/showdown.js"></script>
+<script src="../src/js/monster.js"></script>
+<script src="../src/js/widgets/core.js"></script>
+<script src="../src/js/widgets/extra.js"></script>
+<script src="../src/js/widgets/dialog/fields.js"></script>
+
+<script>
+
+	$(document).ready(function(){
+		var node = $('#contents-primary');
+		var data = {};
+
+		var editor = new MONSTER.editor(node,{},data,true);
+	});
+
+</script>
+
+
+</body>
+</html>
