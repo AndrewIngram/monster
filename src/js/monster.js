@@ -1,46 +1,7 @@
 var MONSTER = function() {
-
-	var log_switch = false;
-	
-	this.enable_logging = function(){
-		log_switch = true;
-	};
-	
-	this.disable_logging = function(){
-		log_switch = false;
-	};
-	
-	this.log = function(data){
-		if (log_switch) {
-			console.log(data);
-		}
-	};
-	
 	return this;
 }();
 
-/**
- * Because the normal method of defining methods is ugly...
- */
-Function.prototype.method = function(name, func) {
-	if (!this.prototype[name]) {
-		this.prototype[name] = func;
-		return this;
-	}
-};
-
-/** 
- * Defining lots of methods at once...
- */
-Function.prototype.methods = function(map) {
-	for (var entry in map) {
-		if (map.hasOwnProperty(entry)){
-			var val = map[entry];
-			this.method(entry,val);
-		}	
-	}
-	return this;
-};
 
 /** 
  * Extend jQuery to allow us to easy find widgets.
@@ -78,6 +39,9 @@ Function.prototype.methods = function(map) {
 			});
 			
 			return result;
+		},
+		outerHTML: function(s) {
+			return (s) ? this.before(s).remove() : $('<div>').append(this.eq(0).clone()).html();
 		},
 		getCSS : function() {
 			if (arguments.length) {
@@ -122,73 +86,75 @@ Function.prototype.methods = function(map) {
 	});
 })(jQuery);
 
+MONSTER.base = MONSTER.base || {};
+
 /**
  * Creates an instance of a monster editor. Takes a jQuery DOM node and a data hash.
  */
-MONSTER.editor = function(node,spec,data,build) {
-	this.node = node;
-	this.spec = spec;
-	this.data = data;
-	
-	if (build) {
-		this.init();
-	}
-};
 
-MONSTER.editor.methods({
-	init: function() {
-		var ed = this;
-		
-		ed.node.widgets().each(function(i){
-			var data = ed.data ? ed.data[i] : undefined;
-			var node = $(this);
-			
-			ed.editor_for_node(node,data);
-		});
-	},
-	editor_for_node : function(node,data) {
+MONSTER.base.editor = function(spec, my) {
+	var that = {};
+	
+	that.node = spec.node;	
+	that.template = spec.node.html();
+	that.data = spec.data;
+	
+	that.editor_for_node = function(node,data){
 		var widget_name = node.attr('m:widget');
 		var widget = MONSTER.widgets[widget_name];
 
 		node.data('widget',widget({
 			node: node,
 			data: data,
-			editor: this	
+			editor: that	
 		}));
-	},
-	get_data: function() {
-		var ed = this;
+	};
+	
+	that.data_for_node = function(node){
+		return node.data('widget').get_data();
+	};
+	
+	that.render_node = function(node){
+		return node.data('widget').render();
+	};
+		
+	that.get_data = function(){
 		var result = [];
 		
-		ed.node.widgets().each(function(i){
+		that.node.widgets().each(function(i){
 			var node = $(this);
-			var data = ed.data_for_node(node);
+			var data = that.data_for_node(node);
 			result.push(data);
 		});
 		return result;
-	},
-	data_for_node: function(node) {
-		return node.data('widget').get_data();
-	},
-	render: function(callback) {
-		var ed = this;
-		var data = ed.build_data();
-		var new_node = $('<div>' + ed.template + '</div>');
+	};
+	
+	that.render = function(callback){
+		var duplicate = $('<div>'+that.template+'</div>');
 		
-		ed.node.widgets().each(function(i){
+		var temp_widgets = duplicate.widgets();
+		
+		that.node.widgets().each(function(i){
 			var node = $(this);
-			ed.render_node(node,data[i]);
+			var html = that.render_node(node);
+
+			temp_widgets.eq(i).replaceWith(html);
 		});
 		
-		return new_node;
-	},
-	render_node: function(node, data){
-		return node.data('widget').render();
-	},
-	revert: function() {
+		callback(duplicate.html());
 		
-	},
-	change_template: function(template) {
-		
-	}
-});
+		return duplicate;
+	};
+	
+	that.node.widgets().each(function(i){
+		var data = that.data ? that.data[i] : undefined;
+		var node = $(this);
+		that.editor_for_node(node,data);
+	});
+	
+	return that;
+};
+
+MONSTER.editor = function(spec,my){
+	return MONSTER.base.editor(spec,my);
+};

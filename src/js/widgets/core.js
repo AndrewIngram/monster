@@ -11,6 +11,8 @@ MONSTER.base.widget = function(spec, my) {
 	that.node = spec.node;
 	that.data = spec.data;
 	
+	that.clean_html = that.node.outerHTML();
+	
 	that.get_data = function(){
 		
 	};
@@ -51,13 +53,23 @@ MONSTER.widgets.container = function(spec, my) {
 	node.widgets().filter(container_nodes).each(build_options);	
 		
 	node.empty();
-	
-	node.append(block_options[0].html);
-	
-	node.widgets().filter(container_nodes).each(function(i){
-		spec.editor.editor_for_node($(this),undefined);
-	});
-	
+
+	if (spec.data) {
+		for (var i in spec.data){
+			var type = spec.data[i]['type'];
+			var temp = $(block_options_by_type[type]);
+			node.append(temp);
+
+			spec.editor.editor_for_node(temp,spec.data[i].data);		
+			
+		}
+	}
+	else {
+		var temp = $(block_options[0].html);
+		node.append(temp);
+		spec.editor.editor_for_node(temp,spec.data[i].data);	
+	}
+
 	var select = $('<select>');
 			
 	for (var i=0; i < block_options.length; i++){
@@ -88,18 +100,41 @@ MONSTER.widgets.container = function(spec, my) {
 
 	handler.children('span.add').click(function(){
 		new_node = $(block_options[select.get(0).value]['html']);
-		new_node.hide();
-		$(this).parent().before(new_node);
 
-		MONSTER.widgets.block({
+		new_node.data('widget',MONSTER.widgets.block({
 			'node': new_node,
 			'data': undefined,
 			'editor': spec.editor
-		});
+		}));
+		
+		new_node.hide();
+		$(this).parent().before(new_node);		
 		
 		new_node.fadeIn(400);
 		return false;
-	});	
+	});
+	
+	that.get_data = function(){
+		var result = []
+		
+		node.widgets().each(function(i)
+		{
+			result.push(spec.editor.data_for_node($(this)));
+		});		
+		
+		return result;
+	};
+	
+	that.render = function(){
+		var container = $(that.clean_html).empty();
+		
+		node.widgets().each(function(i)
+		{
+			container.append(spec.editor.render_node($(this)));
+		});
+		
+		return container || null;
+	};
 	
 	return that;
 }
@@ -140,6 +175,34 @@ MONSTER.widgets.block = function(spec, my) {
 		return false;			
 	});
 	
+	that.get_data = function(){
+		var temp = node.widgets();
+		
+		var result = {
+			'type': node.attr('m:label'),
+			'data': []
+		};
+
+		temp.each(function(i)
+		{
+			result['data'].push(spec.editor.data_for_node($(this)));
+		});
+
+		return result;
+	};
+	
+	that.render = function(){
+		var duplicate = $(that.clean_html);
+		
+		node.widgets().each(function(i){
+			var html = spec.editor.render_node($(this));
+			
+			duplicate.widgets().eq(i).replaceWith(html);
+		});
+		
+		return duplicate;
+	};
+	
 	return that;
 }
 
@@ -161,6 +224,16 @@ MONSTER.base.dialog_widget = function(spec, my) {
 			}
 		}
 	};
+	
+	that.init = function() {
+		if (spec.data) {
+			for (var key in that.fields) {						
+				if (that.fields.hasOwnProperty(key)){
+					that.fields[key].set_value(spec.data[that.fields[key].data_name]);
+				}
+			}
+		}
+	};	
 	
 	that.write = function(container){
 		for (var key in that.fields) {						
@@ -185,6 +258,10 @@ MONSTER.base.dialog_widget = function(spec, my) {
 		}
 		
 		return result;
+	};
+	
+	that.render = function(){
+		return that.node.outerHTML();
 	};
 	
 	that.node.click(function(e){
@@ -253,7 +330,10 @@ MONSTER.widgets.linkedline = function(spec, my){
 			data_name: 'text'		
 		})
 	};
-	return that;
+	
+	that.init();
+	
+	return that;	
 }; 
 
 /** 
@@ -304,6 +384,9 @@ MONSTER.widgets.linkedimage = function(spec, my){
 			data_name: 'title'
 		})
 	};
+	
+	that.init();
+	
 	return that;
 };
 
@@ -330,7 +413,7 @@ MONSTER.widgets.line = function(spec){
 		return spec.node.html();
 	};
 	that.render = function(){
-		spec.node.html(spec.data);
+		return spec.node.outerHTML();
 	};
 			
 	return that;
@@ -379,107 +462,7 @@ MONSTER.widgets.markdown = function(spec,my){
 		return that.node.html();
 	};
 	that.render = function(){
-		that.node.html(that.data);
-	};
-			
-	return that;
-};
-
-MONSTER.widgets.markdown_container = function(spec,my){
-	var my = my || {};
-	var that = MONSTER.base.widget(spec,my);
-
-	var block_options = [];
-	var block_options_by_type = {};
-	
-	var node = spec.node;
-	
-	var build_options = function(i) {
-		
-		var $this = $(this);
-		
-		var html = $('<div />').append($this.clone()).remove().html();
-		var label = $this.attr('m:label');
-		
-		block_options_by_type[label] = html;
-		
-		block_options[i] = {
-			label: label,
-			html: html
-		};
-	};
-	
-	var container_nodes = function() {		
-		return $(this).attr('m:widget') !== 'container';
-	};
-	
-	node.widgets().filter(container_nodes).each(build_options);	
-		
-	node.empty();
-	
-	var md_node = $('<div m:widget="markdown"/>');
-	
-	MONSTER.widgets.markdown({
-		'node': md_node,
-		'data': 'placeholder',
-		'editor': spec.editor
-	});
-	
-	node.append(md_node);
-	
-	var select = $('<select>');
-			
-	for (var i=0; i < block_options.length; i++){
-
-		var temp = block_options[i];
-		
-		var option = $('<option>');
-		option.attr('value',i);
-		option.text(temp.label);
-
-		select.append(option);
-	}		
-	
-	var handler = $('<div class="ui-widget-header ui-helper-clearfix ui-corner-all" style="z-index: 9999; margin: 0 0 10px; padding: 2px;"><span class="add ui-corner-all"><span class="ui-icon ui-icon-plus"></span></span></div>');
-	
-	handler.prepend(select);
-		
-	node.append(handler);		
-	
-	md_node.sortable({
-		handle: 'span.move',
-		scroll: true,
-		cursorAt: 'top left',
-		tolerance: 'intersect',
-		cancel: 'p',
-		helper: 'clone',
-		//placeholder: 'ui-state-highlight'
-		//forcePlaceholderSize: true,
-		//cursor: 'crosshair',
-	});
-
-	handler.children('span.add').click(function(){
-		var new_node = $(block_options[select.get(0).value]['html']);
-		new_node.hide();
-		md_node.prepend(new_node);
-		
-		MONSTER.widgets.block({
-			'node': new_node,
-			'data': undefined,
-			'editor': spec.editor
-		});		
-		
-		md_node.sortable('refresh');	
-
-		new_node.fadeIn(400);
-		return false;
-	});
-	
-	that.get_data = function(){
-		return that.node.html();
-	};
-	that.render = function(){
-		that.node.html(that.data);
+		return that.node.outerHTML();
 	};
 			
 	return that;

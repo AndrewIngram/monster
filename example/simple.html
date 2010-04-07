@@ -45,37 +45,51 @@
 </head>
 <body>
 
-<div id="container" class="container_12">
-	
-	<div id="contents-primary">
-	
-	<div class="prefix_2 suffix_2 grid_8"
-		<h1 m:widget="line" m:title="Page Title">Heading 1</h1>
+
+<div id="contents-primary">
+
+<h1 m:widget="line" m:title="Page Title">Heading 1</h1>
+
+<div>
+	<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x300" /></a>
+</div>
+
+<div m:widget="markdown">Content</div>
+
+<div m:widget="container">
+	<div m:widget="block" m:label="Block 1">
+			<h6>Not editable</h6>
+			<h2 m:widget="line" m:title="Heading 2">Heading 2</h2>
+			<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/100x100" /></a>
 	</div>
 	
-	<div class="clear"></div>
-	
-	<div m:widget="container">
-		<div m:widget="block" m:label="Default">	
-			<div m:widget="markdown" class="body-block">Content</div>
-		</div>
+	<div m:widget="block" m:label="Block 2">
+			<h6>Not editable</h6>
+			<h2 m:widget="line" m:title="Heading 2">Heading 2</h2>
 			
-		<div m:widget="block" m:label="Text With Image">	
-			<a class="aside-left" m:widget="linkedimage" href="#"><img src="http://dummyimage.com/300x300" /></a>
-			<div m:widget="markdown" class="body-block">Content</div>
-			<div class="clear"></div>
-		</div>		
-		
-	</div>
-	
-	</div>
+			<div m:widget="container">
+				<div m:widget="block" m:label="Subblock 1">
+						<h6>Not editable</h6>
+						<h3 m:widget="line" m:title="Heading 2">Heading 2</h3>
+						<a m:widget="linkedimage" href="#"><img src="http://dummyimage.com/50x50" /></a>
+				</div>
+			</div>
+	</div>	
+</div>
+
+</div>
+
+<button id="data">Data</button>
+<button id="render">Render</button>
+
+<div id="render-target">
 	
 </div>
 
-
-<script src="../lib/js/jquery-1.4.1.min.js"></script>
+<script src="../lib/js/jquery-1.4.2.min.js"></script>
 <script src="../lib/js/jquery-ui-1.7.2.custom.min.js"></script>
 <script src="../lib/js/jquery.jeditable.js"></script>
+<script src="../lib/js/jquery.json-2.2.min.js"></script>
 <script src="../lib/js/showdown.js"></script>
 <script src="../src/js/monster.js"></script>
 <script src="../src/js/widgets/core.js"></script>
@@ -86,9 +100,27 @@
 
 	$(document).ready(function(){
 		var node = $('#contents-primary');
-		var data = {};
+		var data = ["Page Title",{"src":"http://dummyimage.com/300x100","alt":"","href":"http://www.google.com/","title":""},"Lipsum.org",[{"type":"Block 1","data":["Subheading",{"src":"http://dummyimage.com/200x100","alt":"","href":"#","title":""}]},{"type":"Block 1","data":["Heading 2",{"src":"http://dummyimage.com/100x100","alt":"","href":"#","title":""}]},{"type":"Block 2","data":["Heading 2",[{"type":"Subblock 1","data":["Heading 2",{"src":"http://dummyimage.com/50x50","alt":"","href":"#","title":""}]},{"type":"Subblock 1","data":["Heading 2",{"src":"http://dummyimage.com/50x50","alt":"","href":"#","title":""}]}]]}]];
+		
+		var spec = {
+			'node': node,
+			'data': data
+		}
 
-		var editor = new MONSTER.editor(node,{},data,true);
+		var editor = MONSTER.editor(spec);
+		
+		$('button#data').click(function(){
+			console.log($.toJSON(editor.get_data()));
+		});		
+		
+		$('button#render').click(function(){
+			
+			var cb = function(node){
+				$('#render-target').html(node);
+			}
+			
+			editor.render(cb);
+		});
 	});
 
 </script>
