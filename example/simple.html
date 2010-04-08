@@ -21,6 +21,7 @@
 	
 	#container {
 		margin: 50px auto;
+		width: 960px;
 	}
 	
 	h1 {
@@ -29,22 +30,12 @@
 		margin: 0 0 1em;
 	}
 	
-	.aside-left {
-		float: left;
-		margin: 0 20px 20px 170px;
-		position: relative;
-		z-index: 100;
-	}
-	
-	.body-block {
-		margin: 0 170px 0 170px;
-	}
-	
 </style>
 
 </head>
 <body>
 
+<div id="container">
 
 <div id="contents-primary">
 
@@ -86,21 +77,22 @@
 	
 </div>
 
+</div>
+
 <script src="../lib/js/jquery-1.4.2.min.js"></script>
 <script src="../lib/js/jquery-ui-1.7.2.custom.min.js"></script>
 <script src="../lib/js/jquery.jeditable.js"></script>
 <script src="../lib/js/jquery.json-2.2.min.js"></script>
 <script src="../lib/js/showdown.js"></script>
 <script src="../src/js/monster.js"></script>
-<script src="../src/js/widgets/core.js"></script>
-<script src="../src/js/widgets/extra.js"></script>
-<script src="../src/js/widgets/dialog/fields.js"></script>
+<script src="../src/js/monster.widgets.core.js"></script>
+<script src="../src/js/monster.fields.core.js"></script>
 
 <script>
 
 	$(document).ready(function(){
 		var node = $('#contents-primary');
-		var data = ["Page Title",{"src":"http://dummyimage.com/300x100","alt":"","href":"http://www.google.com/","title":""},"Lipsum.org",[{"type":"Block 1","data":["Subheading",{"src":"http://dummyimage.com/200x100","alt":"","href":"#","title":""}]},{"type":"Block 1","data":["Heading 2",{"src":"http://dummyimage.com/100x100","alt":"","href":"#","title":""}]},{"type":"Block 2","data":["Heading 2",[{"type":"Subblock 1","data":["Heading 2",{"src":"http://dummyimage.com/50x50","alt":"","href":"#","title":""}]},{"type":"Subblock 1","data":["Heading 2",{"src":"http://dummyimage.com/50x50","alt":"","href":"#","title":""}]}]]}]];
+		var data = ["Page Title",{"src":"http://dummyimage.com/960x100","alt":"","href":"http://www.google.com/","title":""},"Lipsum.org",[{"type":"Block 1","data":["Subheading",{"src":"http://dummyimage.com/200x100","alt":"","href":"#","title":""}]},{"type":"Block 1","data":["Heading 2",{"src":"http://dummyimage.com/100x100","alt":"","href":"#","title":""}]},{"type":"Block 2","data":["Heading 2",[{"type":"Subblock 1","data":["Heading 2",{"src":"http://dummyimage.com/50x50","alt":"","href":"#","title":""}]},{"type":"Subblock 1","data":["Heading 2",{"src":"http://dummyimage.com/50x50","alt":"","href":"#","title":""}]}]]}]];
 		
 		var spec = {
 			'node': node,

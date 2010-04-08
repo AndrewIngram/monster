@@ -67,7 +67,7 @@ MONSTER.widgets.container = function(spec, my) {
 	else {
 		var temp = $(block_options[0].html);
 		node.append(temp);
-		spec.editor.editor_for_node(temp,spec.data[i].data);	
+		spec.editor.editor_for_node(temp,null);	
 	}
 
 	var select = $('<select>');
