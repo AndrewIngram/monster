@@ -1,0 +1,10 @@
+Monster is a small library for editing almost any kind of content on website. It has some similarities with Unify (http://unify.unitinteractive.com/) by Unit Interactive, but isn't intended as an end product.
+
+Monster works by converting instrumented HTML tags into instances of widgets, the definition of what a widget can do is intentionally vague but the library comes pre-packaged with widgets for editable lines, repeatable / sortable blocks, images (and linked images) and raw HTML.
+
+The origin of the library lies in an in-house application for building product-oriented newsletters. Without the manpower to hand-craft individual newsletters, an editor was developed that allowed users to define regions of a page as products (along with relevant fields for title, description, image and price) and customise the layout of the page via a simple drag-drop interface with a higher level of flexibility than was possible with the previous system which had the newsletter layout tied directly to a database model. Monster is a complete rewrite of this editor with a focus on:
+
+* A simple inheritance pattern (borrowed from 'Javascript: The Good Parts' by Douglas Crockford) to allow easy development of new widgets without excessive duplication of code.
+* The ability to define 'dialog' widgets which use a simple callback system to allow editing of multiple values within a single widget - the linkedimage widget is the main example of this.
+* Backend-agnostic. The original editor was written with a Django backend (and such a backend exists as another project) but this limited its utility. Consequently, Monster has been written without load/save methods. but has instead been designed to be easily extensible so that a new backend can be integrated relatively easily.
+* Instrumentation attributes use an 'm' namespace, eg 'm:widget' to reduce the chance of conflicting with other libraries.
